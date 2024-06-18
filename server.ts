@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import Document from "./models/Document";
 
 declare const process: {
@@ -15,6 +16,7 @@ dotenv.config();
 const app = express();
 const PORT: number = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(bodyParser.json());
 
 mongoose.connect(process.env.MONGODB_URI);
@@ -34,10 +36,21 @@ app.get("/", async (req, res) => {
   }
 });
 
+app.get("/document/:documentId", async (req, res) => {
+  try {
+    const document = await Document.findById(req.params.documentId);
+    if (!document) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+    res.status(200).json(document);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post("/document/new", async (req, res) => {
   try {
     const newDocument = await Document.create(req.body);
-    await newDocument.save();
     res.status(201).json(newDocument);
   } catch (err: any) {
     res.status(500).json({ error: err.message });

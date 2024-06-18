@@ -3,6 +3,8 @@ import { Schema, model } from "mongoose";
 interface Document {
   title: string;
   snippet?: string;
+  codeLanguage?: string;
+  highlightedLines?: string;
   text: string;
 }
 
@@ -12,6 +14,12 @@ const documentSchema = new Schema<Document>({
     required: true,
   },
   snippet: {
+    type: String,
+  },
+  codeLanguage: {
+    type: String,
+  },
+  highlightedLines: {
     type: String,
   },
   text: {

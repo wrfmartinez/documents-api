@@ -40,41 +40,93 @@ var dotenv_1 = require("dotenv");
 var body_parser_1 = require("body-parser");
 var express_1 = require("express");
 var mongoose_1 = require("mongoose");
+var cors_1 = require("cors");
 var Document_1 = require("./models/Document");
 dotenv_1.default.config();
 var app = (0, express_1.default)();
-var PORT = process.env.PORT | 3000;
-var MONGODB_URI = process.env.MONGODB_URI;
+var PORT = process.env.PORT || 3000;
+app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
-mongoose_1.default.connect(MONGODB_URI);
+mongoose_1.default.connect(process.env.MONGODB_URI);
 mongoose_1.default.connection.on("connected", function () {
     console.log("Connected to ".concat(mongoose_1.default.connection.name));
 });
+mongoose_1.default.connection.on("error", function (err) {
+    console.error("Error connecting to the database: ".concat(err));
+});
 app.get("/", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var documents;
+    var documents, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, Document_1.default.find()];
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, Document_1.default.find()];
             case 1:
                 documents = _a.sent();
                 res.status(200).json(documents);
-                console.log(documents);
-                return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 2:
+                err_1 = _a.sent();
+                res.status(500).json({ error: err_1.message });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); });
 app.post("/document/new", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var newDocument;
+    var newDocument, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, Document_1.default.create(req.body)];
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, Document_1.default.create(req.body)];
             case 1:
                 newDocument = _a.sent();
-                return [4 /*yield*/, newDocument.save()];
-            case 2:
-                _a.sent();
                 res.status(201).json(newDocument);
-                return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 2:
+                err_2 = _a.sent();
+                res.status(500).json({ error: err_2.message });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+app.put("/document/:documentId", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var editDocument, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, Document_1.default.findByIdAndUpdate(req.params.documentId, req.body, { new: true, runValidators: true })];
+            case 1:
+                editDocument = _a.sent();
+                res.status(200).json(editDocument);
+                return [3 /*break*/, 3];
+            case 2:
+                err_3 = _a.sent();
+                res.status(500).json({ error: err_3.message });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+app.delete("/document/:documentId", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var deleteDocument, err_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, Document_1.default.findByIdAndDelete(req.params.documentId)];
+            case 1:
+                deleteDocument = _a.sent();
+                res.status(200).json(deleteDocument);
+                return [3 /*break*/, 3];
+            case 2:
+                err_4 = _a.sent();
+                res.status(500).json({ error: err_4.message });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); });

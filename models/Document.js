@@ -9,6 +9,12 @@ var documentSchema = new mongoose_1.Schema({
     snippet: {
         type: String,
     },
+    codeLanguage: {
+        type: String,
+    },
+    highlightedLines: {
+        type: String,
+    },
     text: {
         type: String,
         required: true
